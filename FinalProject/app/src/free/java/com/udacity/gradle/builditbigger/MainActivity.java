@@ -17,12 +17,14 @@ import com.udacity.gradle.builditbigger.task.JokeEndpointsAsyncTask;
 public class MainActivity extends ActionBarActivity {
 
     private InterstitialAd mInterstitialAd;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Context context = this;
+        mProgressDialog = getProgressDialog();
 
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.banner_ad_unit_id));
@@ -30,11 +32,14 @@ public class MainActivity extends ActionBarActivity {
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                new JokeEndpointsAsyncTask(context, getProgressDialog(), getString(R.string.api_service_root_url)).execute();
+                new JokeEndpointsAsyncTask(context, null, getString(R.string.api_service_root_url)).execute();
             }
 
             @Override
             public void onAdLoaded() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
                 if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
                 }
@@ -42,6 +47,9 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
                 Toast.makeText(context, "The error code received is " + errorCode, Toast.LENGTH_SHORT).show();
             }
         });
@@ -76,6 +84,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void requestNewInterstitial() {
+
+        if (null != mProgressDialog) mProgressDialog.show();
+
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
