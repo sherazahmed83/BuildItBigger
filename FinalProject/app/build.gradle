@@ -36,7 +36,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // Added for AdMob
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.google.android.gms:play-services:7.5.0'
+    freeCompile 'com.google.android.gms:play-services:7.5.0'
     compile project(path: ':backend', configuration: 'android-endpoints')
     compile project(':androidlibrary')
 }
